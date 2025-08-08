@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+body {
+  background-color: #000000;
+  overflow-x: hidden;
+}
+
+/* Custom glow effect for terminal theme */
+.glow {
+  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+}
+
+/* Custom slider styling for terminal theme */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(0, 255, 0, 0.2);
+  outline: none;
+  border-radius: 4px;
+  height: 6px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00ff00;
+  cursor: pointer;
+  border: 2px solid #000000;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00ff00;
+  cursor: pointer;
+  border: 2px solid #000000;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 0, 0.5);
+}
+
+/* Focus styles for accessibility */
+input:focus,
+button:focus {
+  outline: 2px solid #00ff00;
+  outline-offset: 2px;
+}
+
+/* Animation for border glow */
+@keyframes borderGlow {
+  0%, 100% { 
+    border-color: rgba(0, 255, 0, 0.5); 
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+  }
+  50% { 
+    border-color: rgba(0, 255, 0, 0.8); 
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+}
+
+.border-glow-animation {
+  animation: borderGlow 2s ease-in-out infinite;
+}
