@@ -1,6 +1,8 @@
 import { Check, Upload, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import Cropper from "react-easy-crop";
+import api from "./api/axios";
+import StringArtVisualizer from "./StringVisualizer";
 
 interface CropArea {
   x: number;
@@ -16,11 +18,15 @@ interface Point {
 
 function App() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
+  const [artData, setArtData] = useState<{ nails: Point[]; lines: [number, number][] }>({
+    nails: [],
+    lines: [],
+  });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -79,11 +85,26 @@ function App() {
     });
   };
 
+  const sendImageToServer = async (imageBlob: Blob) => {
+    const formData = new FormData();
+    formData.append('image', imageBlob, 'cropped-image.jpg');
+
+    try {
+      const response = await api.post('/transform', formData)
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
+
   const handleCropConfirm = async () => {
     if (selectedImage && croppedAreaPixels) {
       try {
-        const croppedImageUrl = await getCroppedImg(selectedImage, croppedAreaPixels);
-        setCroppedImage(croppedImageUrl);
+        const croppedImageBlob = await getCroppedImg(selectedImage, croppedAreaPixels);
+        const result = await sendImageToServer(croppedImageBlob);
+
+        setProcessedImage(result.base64Image);
+        setArtData(result.stringArt)
         setShowCropModal(false);
         setSelectedImage(null);
       } catch (error) {
@@ -98,6 +119,9 @@ function App() {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   };
+
+  console.log('Art Data nails:', artData.nails);
+  console.log('Art Data lines:', artData.lines);
 
   return (
     <div className="min-h-screen bg-black text-green-400 font-mono flex">
@@ -117,9 +141,9 @@ function App() {
           {/* Image Display Area */}
           <div className="space-y-4">
             <div className="aspect-square border border-green-400 border-opacity-50 rounded-lg overflow-hidden bg-black bg-opacity-50 flex items-center justify-center relative group hover:border-opacity-80 transition-all duration-300">
-              {croppedImage ? (
+              {processedImage ? (
                 <img 
-                  src={croppedImage} 
+                  src={processedImage} 
                   alt="Cropped" 
                   className="w-full h-full object-cover"
                 />
@@ -150,7 +174,7 @@ function App() {
 
       {/* Right Panel - 3/4 of the screen (empty) */}
       <div className="flex-1 p-6 bg-black bg-opacity-50">
-        {/* Empty space as requested */}
+        < StringArtVisualizer nails={artData.nails} lines={artData.lines} />
       </div>
 
       {/* Crop Modal */}
