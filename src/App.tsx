@@ -103,6 +103,8 @@ function App() {
         const croppedImageBlob = await getCroppedImg(selectedImage, croppedAreaPixels);
         const result = await sendImageToServer(croppedImageBlob);
 
+        console.log('Server response:', result);
+
         setProcessedImage(result.base64Image);
         setArtData(result.stringArt)
         setShowCropModal(false);
